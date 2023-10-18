@@ -1,6 +1,3 @@
-// Guida: https://www.ludusrusso.dev/blog/2022/06/telegram-bot-node
-// Deploy: https://www.cyclic.sh/posts/how-to-build-a-telegram-bot/
-
 import { Telegraf } from "telegraf";
 import fetch  from "isomorphic-fetch";
 require('dotenv').config();
@@ -45,7 +42,8 @@ bot.command("BTCfees", async (ctx) => {
    var reply = "High: \t" + getFees("FASTEST", data) + "\n";
    reply += "Med: \t" + getFees("HALFHOUR", data) + "\n";
    reply += "Slow: \t" + getFees("HOUR", data) + "\n";
-   //reply += "Very slow: " + getFees("ECONOMY", data) + "\n";
+   reply += "Very slow: " + getFees("ECONOMY", data) + "\n";
+   reply += "Minimum: " + getFees("MINIMUM", data) + "\n";
    
    ctx.reply("Priority (sat/vB): \n" + reply);
    ctx.reply(menu);
@@ -79,9 +77,17 @@ function getFees(type: string, data: string) {
         case "ECONOMY":
             inizio = data.indexOf("economyFee\":") + 12;
             break;   
+        
+        case "MINIMUM":
+            inizio = data.indexOf("minimumFee\":") + 12;
+            break; 
     }
     
-    fine = data.indexOf(",", inizio + 1);
+    if(type != "MINIMUM")
+        fine = data.indexOf(",", inizio + 1);
+    else
+        fine = data.indexOf("}");
+    
     return data.substring(inizio, fine);
 }
 
